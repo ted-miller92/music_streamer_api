@@ -1,0 +1,17 @@
+{
+  "name": "music_streamer_api",
+  "version": "1.0.0",
+  "description": "API for Music Streamer App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql": "^2.18.1"
+  }
+}
