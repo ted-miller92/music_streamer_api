@@ -1,16 +1,16 @@
-const express = require("express");
+import express, { json, urlencoded } from "express";
+import { pool } from "./database/db_connector";
+
 const app = express();
 const port = 2626;
 
-app.use(express.json());
+app.use(json());
 
 app.use(
-    express.urlencoded({
+    urlencoded({
         extended: true
     })
 );
-
-var db = require("./database/db-connector");
 
 app.get("/", (req, res) => {
     res.json({message: "ok"});
@@ -36,7 +36,7 @@ app.get("/api/artists", (req, res) => {
         query = "SELECT * FROM Artists;"
     }
 
-    db.pool.query(query, function (err, results, fields) {
+    pool.query(query, function (err, results, fields) {
         if (err){
             console.log(err);
         }
@@ -53,7 +53,7 @@ app.post("/api/artists", (req, res) => {
         `INSERT INTO Artists(artist_name, artist_description)
         VALUES("${artistName}", "${artistDescription}")`;
     
-    db.pool.query(query, (err, results, fields) => {
+    pool.query(query, (err, results, fields) => {
         if (err) {
             console.log(err.code);
             res.status(400).send({message : "Record not created"});
@@ -76,7 +76,7 @@ app.put("/api/artists", (req, res) => {
         artist_description = "${artistDescription}"
         WHERE artist_id = ${artistID};`
 
-    db.pool.query(query, (err, results, fields) => {
+    pool.query(query, (err, results, fields) => {
         if (err) {
             console.log(err.code);
             res.status(400).send({message : "Record not updated"});
@@ -96,7 +96,7 @@ app.delete("/api/artists", (req, res) => {
         `DELETE FROM Artists
         WHERE artist_id = ${artistID};`
 
-    db.pool.query(query, (err, results, fields) => {
+    pool.query(query, (err, results, fields) => {
         if (err) {
             console.log(err.code);
             res.status(400).send({message: "Record not deleted"});

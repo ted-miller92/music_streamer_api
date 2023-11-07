@@ -1,8 +1,8 @@
-require("dotenv").config();
+import "dotenv/config";
 
-var mysql = require("mysql");
+import { createPool } from "mysql";
 
-var pool = mysql.createPool({
+var _pool = createPool({
     connectionLimit: 100,
     host: "localhost",
     user: process.env.DB_USER,
@@ -10,4 +10,4 @@ var pool = mysql.createPool({
     database: "music_streamer"
 });
 
- module.exports.pool = pool;
+export { _pool as pool };
