@@ -111,7 +111,7 @@ app.delete("/api/artists", (req, res) => {
 Songs
 */
 
-// Get songs by artistID
+// Get songs
 app.get("/api/songs", (req, res) => {
     if (Object.keys(req.query).length == 0) {
         res.status(400).send({
@@ -119,19 +119,29 @@ app.get("/api/songs", (req, res) => {
         });
         return;
     }
+
     // query building
     let query;
 
     if (req.query.artistID){
+        // artistID is specified
         const artistID = req.query.artistID;
         query = `SELECT * FROM Songs
             INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
             WHERE Song_Artists.artist_id = ${artistID};`;
     } else if (req.query.releaseID){
+        // releaseID is specified
         const releaseID = req.query.releaseID;
         query = `SELECT * FROM Songs
             WHERE release_id = ${releaseID};`;
+    } else if (req.query.playlistID) {
+        // playlistID is specified
+        const playlistID = req.query.playlistID;
+        query = `SELECT song_id FROM Playlist_Songs
+            WHERE Playlist_Songs.playlist_id = ${playlistID};`;
     } else {
+        // no query string
+        // lets avoid sending every song in the db
         res.status(400).send({
             message: "Bad request. Send params of artistID OR releaseID"
         });
@@ -147,11 +157,8 @@ app.get("/api/songs", (req, res) => {
     });
 });
 
-// Get songs by releaseID
-
-// Get songs by playlistID
-
 // Create a new song
+
 
 // Update a song
 
