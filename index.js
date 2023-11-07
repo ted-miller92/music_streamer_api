@@ -1,5 +1,5 @@
 import express, { json, urlencoded } from "express";
-import { pool } from "./database/db_connector";
+import { pool } from "./database/db_connector.js";
 
 const app = express();
 const port = 2626;
@@ -38,9 +38,10 @@ app.get("/api/artists", (req, res) => {
 
     pool.query(query, function (err, results, fields) {
         if (err){
-            console.log(err);
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
         }
-        res.status(200).send(results);
     });
 });
 
@@ -111,6 +112,40 @@ Songs
 */
 
 // Get songs by artistID
+app.get("/api/songs", (req, res) => {
+    if (Object.keys(req.query).length == 0) {
+        res.status(400).send({
+            message: "Bad request. Send params of artistID OR releaseID"
+        });
+        return;
+    }
+    // query building
+    let query;
+
+    if (req.query.artistID){
+        const artistID = req.query.artistID;
+        query = `SELECT * FROM Songs
+            INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            WHERE Song_Artists.artist_id = ${artistID};`;
+    } else if (req.query.releaseID){
+        const releaseID = req.query.releaseID;
+        query = `SELECT * FROM Songs
+            WHERE release_id = ${releaseID};`;
+    } else {
+        res.status(400).send({
+            message: "Bad request. Send params of artistID OR releaseID"
+        });
+        return;
+    }
+
+    pool.query(query, (err, results, fields) => {
+        if (err) {
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+});
 
 // Get songs by releaseID
 
