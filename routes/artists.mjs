@@ -1,33 +1,52 @@
 import { pool } from "../database/db_connector.js";
-import {body, validationResult, matchedData} from "express-validator";
+import {query, body, validationResult, matchedData} from "express-validator";
 
+/* Validation Schema */
+
+// validation for getting Artists
+const getArtistsValidator = [
+    query("artistID").escape(),
+    query("artistName").escape()
+]
+
+// validation for creating Artists
 const createArtistValidator = [
     body("artistName").notEmpty().escape(),
     body("artistDescription").escape()
 ]
 
 const getArtists = (req, res) => {
-    // initialize query var
-    let query = null;
-    
-    // check for query parameters
-    if (req.query.artistID){
-        const artistID = req.query.artistID;
-        query = `SELECT * FROM Artists WHERE artist_id = ${artistID}`;
-    } else if (req.query.artistName) {
-        const artistName = req.query.artistName;
-        query = `SELECT * FROM Artists WHERE artist_name = "${artistName}"`;
-    } else {
-        query = "SELECT * FROM Artists;"
-    }
+    // validation
+    const result = validationResult(req)
 
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    } else {
+        const data = matchedData(req);
+    
+        // check for query parameters, build query
+        let query = null;
+
+        if (data.artistID){
+            const artistID = data.artistID;
+            query = `SELECT * FROM Artists WHERE artist_id = ${artistID}`;
+        } else if (data.artistName) {
+            const artistName = data.artistName;
+            query = `SELECT * FROM Artists WHERE artist_name = "${artistName}"`;
         } else {
-            res.status(200).send(results);
+            query = "SELECT * FROM Artists;"
         }
-    });
+        
+        // query the DB
+        pool.query(query, function (err, results, fields) {
+            if (err){
+                res.status(400).send({message: err.message});
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    }
 }
 
 const createArtist = (req, res) => {
@@ -39,8 +58,6 @@ const createArtist = (req, res) => {
         return;
     } else {
         const data = matchedData(req);
-    
-        console.log(data);
 
         // query building
         const artistName = data.artistName;
@@ -102,4 +119,4 @@ const deleteArtist = (req, res) => {
     });
 }
 
-export default {getArtists, createArtistValidator, createArtist, updateArtist, deleteArtist};
+export default {getArtistsValidator, getArtists, createArtistValidator, createArtist, updateArtist, deleteArtist};

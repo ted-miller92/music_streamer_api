@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 });
 
 /* Artists */
-app.get("/api/artists", artists.getArtists);
+app.get("/api/artists", artists.getArtistsValidator, artists.getArtists);
 app.post("/api/artists", artists.createArtistValidator, artists.createArtist);
 app.put("/api/artists", artists.updateArtist);
 app.delete("/api/artists", artists.deleteArtist);
