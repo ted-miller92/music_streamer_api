@@ -27,10 +27,10 @@ app.get("/", (req, res) => {
 });
 
 /* Artists */
-app.get("/api/artists", artists.getArtistsValidator, artists.getArtists);
-app.post("/api/artists", artists.createArtistValidator, artists.createArtist);
-app.put("/api/artists", artists.updateArtist);
-app.delete("/api/artists", artists.deleteArtist);
+app.get("/api/artists", artists.getArtistsValidation, artists.getArtists);
+app.post("/api/artists", artists.createArtistValidation, artists.createArtist);
+app.put("/api/artists", artists.updateArtistValidation, artists.updateArtist);
+app.delete("/api/artists", artists.deleteArtistValidation, artists.deleteArtist);
 
 /* Songs */
 app.get("/api/songs", songs.getSongs);

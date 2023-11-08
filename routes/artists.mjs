@@ -4,15 +4,27 @@ import {query, body, validationResult, matchedData} from "express-validator";
 /* Validation Schema */
 
 // validation for getting Artists
-const getArtistsValidator = [
+const getArtistsValidation = [
     query("artistID").escape(),
     query("artistName").escape()
 ]
 
 // validation for creating Artists
-const createArtistValidator = [
+const createArtistValidation = [
     body("artistName").notEmpty().escape(),
     body("artistDescription").escape()
+]
+
+// validation for updating Artist
+const updateArtistValidation = [
+    body("artistID").notEmpty().escape(),
+    body("artistName").notEmpty().escape(),
+    body("artistDescription").notEmpty().escape()
+]
+
+// validation for deleting Artist
+const deleteArtistValidation = [
+    body("artistID").notEmpty().escape()
 ]
 
 const getArtists = (req, res) => {
@@ -80,43 +92,67 @@ const createArtist = (req, res) => {
 }
 
 const updateArtist =  (req, res) => {
-    // query building
-    const artistID = req.body.artistID;
-    const artistName = req.body.artistName;
-    const artistDescription = req.body.artistDescription;
-    
-    const query = 
-        `UPDATE Artists
-        SET artist_name = "${artistName}",
-        artist_description = "${artistDescription}"
-        WHERE artist_id = ${artistID};`
+    // validation 
+    const result = validationResult(req);
 
-    pool.query(query, (err, results, fields) => {
-        if (err) {
-            console.log(err.code);
-            res.status(400).send({message : "Record not updated"});
-        } else {
-            res.status(200).send(results);
-        }
-    });   
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    } else {
+        // query building
+        const data = matchedData(req);
+
+        const artistID = data.artistID;
+        const artistName = data.artistName;
+        const artistDescription = data.artistDescription;
+
+        const query = 
+            `UPDATE Artists
+            SET artist_name = "${artistName}",
+            artist_description = "${artistDescription}"
+            WHERE artist_id = ${artistID};`
+
+        pool.query(query, (err, results, fields) => {
+            if (err) {
+                console.log(err.code);
+                res.status(400).send({message : "Record not updated"});
+            } else {
+                res.status(200).send(results);
+            }
+        });   
+    }
 }
 
 const deleteArtist = (req, res) => {
-    // query building
-    const artistID = req.body.artistID;
+    // validation 
+    const result = validationResult(req);
 
-    const query = 
-        `DELETE FROM Artists
-        WHERE artist_id = ${artistID};`
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    } else {
+        // query building
+        const data = matchedData(req);
+        const artistID = data.artistID;
 
-    pool.query(query, (err, results, fields) => {
-        if (err) {
-            console.log(err.code);
-            res.status(400).send({message: "Record not deleted"});
-        } else {
-            res.status(200).send(results);
-        }
-    });
+        const query = 
+            `DELETE FROM Artists
+            WHERE artist_id = ${artistID};`
+
+        pool.query(query, (err, results, fields) => {
+            if (err) {
+                console.log(err.code);
+                res.status(400).send({message: "Record not deleted"});
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    }
 }
 
-export default {getArtistsValidator, getArtists, createArtistValidator, createArtist, updateArtist, deleteArtist};
+export default {
+    getArtistsValidation, getArtists, 
+    createArtistValidation, createArtist, 
+    updateArtistValidation, updateArtist, 
+    deleteArtistValidation, deleteArtist
+};
