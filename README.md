@@ -27,3 +27,5 @@ body : {
 ```
 
 ## Database Set up
+
+Make sure there is a user with priveleges for SELECT, INSERT, UPDATE, DELETE operations on the correct database schema, and that the login information for this user is reflected in the `.env` file. 
