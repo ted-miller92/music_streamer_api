@@ -26,6 +26,13 @@ body : {
 }
 ```
 
+### DELETE requests
+
+No body is needed when making a DELETE request, simply include it as a parameter, trailing the end of the API endpoint. For example the full URL to delete a Genre with the genre_id of 8 would be:
+
+`${API_ENDPOINT}/api/genres/8`
+
+
 ## Database Set up
 
 Make sure there is a user with priveleges for SELECT, INSERT, UPDATE, DELETE operations on the correct database schema, and that the login information for this user is reflected in the `.env` file. 
