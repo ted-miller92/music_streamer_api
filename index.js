@@ -5,7 +5,7 @@ import songs from "./routes/songs.mjs";
 import artists from "./routes/artists.mjs";
 import releases from "./routes/releases.mjs";
 // import releaseTypes from "./routes/releaseTypes.mjs";
-// import users from "./routes/users.mjs";
+import users from "./routes/users.mjs";
 // import playlists from "./routes/playlists.mjs";
 import genres from "./routes/genres.mjs";
 // import songArtists from "./routes/songArtists.mjs";
@@ -53,6 +53,13 @@ app.get("/api/genres/:genreID", genres.genreByIdValidation, genres.getGenre);
 app.post("/api/genres", genres.createGenreValidation, genres.createGenre);
 app.put("/api/genres", genres.updateGenreValidation, genres.updateGenre);
 app.delete("/api/genres/:genreID", genres.genreByIdValidation, genres.deleteGenre);
+
+/* Users */
+app.get("/api/users", users.getUsers);
+app.get("/api/users/:userID", users.userByIdValidation, users.getUser);
+app.post("/api/users", users.createUserValidation, users.createUser);
+app.put("/api/users", users.updateUserValidation, users.updateUser);
+app.delete("/api/users/:userID", users.userByIdValidation, users.deleteUser);
 
 app.listen(port, () => {
     console.log(`API Listening at http://localhost:${port}`);
