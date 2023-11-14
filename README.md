@@ -56,6 +56,10 @@ No body is needed when making a DELETE request, simply include it as a parameter
 DELETE http://{API_ENDPOINT}/api/genres/8
 ```
 
+## Validation
+
+This API uses the package `express-validator` to validate and sanitize incoming requests. The set of validation rules associated with each route are located in the individual route files. The `index.js` file imports both the route handlers and the `express-validator` objects and passes them as arguments to `app.get`, `app.post`, `app.put`, and `app.delete` routes. 
+
 ## Database Set up
 
 Make sure there is a user with priveleges for SELECT, INSERT, UPDATE, DELETE operations on the correct database schema, and that the login information for this user is reflected in the `.env` file. 
