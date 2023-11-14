@@ -49,8 +49,10 @@ app.post("/api/relesases", releases.createRelease);
 
 /* Genres */
 app.get("/api/genres", genres.getGenres);
+app.get("/api/genres/:genreID", genres.genreByIdValidation, genres.getGenre);
 app.post("/api/genres", genres.createGenreValidation, genres.createGenre);
-app.delete("/api/genres/:genreID", genres.deleteGenreValidation, genres.deleteGenre);
+app.put("/api/genres", genres.updateGenreValidation, genres.updateGenre);
+app.delete("/api/genres/:genreID", genres.genreByIdValidation, genres.deleteGenre);
 
 app.listen(port, () => {
     console.log(`API Listening at http://localhost:${port}`);

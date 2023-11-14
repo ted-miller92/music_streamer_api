@@ -26,12 +26,35 @@ body : {
 }
 ```
 
+### GET requests
+
+To retrieve data, most of the entities follow the pattern
+
+```
+GET http://{API_ENDPOINT}/api/artists
+```
+
+### POST requests
+
+Include a body with all parameters filled out. 
+
+```
+POST
+http://{API_ENDPOINT}/api/artists
+body: {
+    "artistName": artistName,
+    "artistDescription" : artistDescription
+}
+
+```
+
 ### DELETE requests
 
 No body is needed when making a DELETE request, simply include it as a parameter, trailing the end of the API endpoint. For example the full URL to delete a Genre with the genre_id of 8 would be:
 
-`${API_ENDPOINT}/api/genres/8`
-
+```
+DELETE http://{API_ENDPOINT}/api/genres/8
+```
 
 ## Database Set up
 

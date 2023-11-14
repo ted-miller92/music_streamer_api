@@ -6,10 +6,39 @@ const createGenreValidation = [
     body("genreName").notEmpty().escape()
 ]
 
-// validation for deleting Artist
-const deleteGenreValidation = [
+// validation for specificying single genre by id
+const genreByIdValidation = [
     param("genreID").notEmpty().escape()
 ]
+
+// validation for updating genre
+const updateGenreValidation = [
+    body("genreName").notEmpty().escape(),
+    body("genreID").notEmpty().escape()
+]
+
+const getGenre = (req, res) => {
+    const result = validationResult(req);
+
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
+    const data = matchedData(req);
+    const genreID = data.genreID;
+
+    const query = `SELECT * FROM Genres
+            WHERE genre_id = ${genreID}`;
+
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
 const getGenres = (req, res) => {
     const query = `SELECT * FROM Genres;`;
@@ -51,6 +80,37 @@ const createGenre = (req, res) => {
     }
 }
 
+const updateGenre = (req, res) => {
+    const result = validationResult(req);
+
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return
+    }
+    
+    // build query from validated data
+    const data = matchedData(req);
+    const genreID = data.genreID;
+    const genreName = data.genreName;
+
+    const query = `UPDATE Genres 
+                    SET genre_name = "${genreName}"
+                    WHERE genre_id = ${genreID};`;
+
+    // execute query
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err)
+            res.status(400).send(err.code);
+        } else if (results.affectedRows === 0) {
+            console.log(err)
+            res.status(400).send({message: "Genre with that id does not exist"});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
+
 const deleteGenre = (req, res) => {
     // validation 
     const result = validationResult(req);
@@ -80,6 +140,8 @@ const deleteGenre = (req, res) => {
     }
 }
 
-export default {getGenres, 
+export default {getGenre, getGenres, 
         createGenre, createGenreValidation, 
-        deleteGenre, deleteGenreValidation}
+        updateGenre, updateGenreValidation,
+        deleteGenre, 
+        genreByIdValidation}
