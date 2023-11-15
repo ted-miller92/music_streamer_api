@@ -7,7 +7,7 @@ import artists from "./routes/artists.mjs";
 import releases from "./routes/releases.mjs";
 import releaseTypes from "./routes/releaseTypes.mjs";
 import users from "./routes/users.mjs";
-// import playlists from "./routes/playlists.mjs";
+import playlists from "./routes/playlists.mjs";
 import genres from "./routes/genres.mjs";
 // import songArtists from "./routes/songArtists.mjs";
 // import playlistSongs from "./routes/playlistSongs.mjs";
@@ -52,6 +52,12 @@ app.get("/api/releaseTypes/:releaseTypeID", releaseTypes.releaseTypeByIdValidati
 app.post("/api/releaseTypes", releaseTypes.createReleaseTypeValidation, releaseTypes.createReleaseType);
 app.put("/api/releaseTypes", releaseTypes.updateReleaseTypeValidation, releaseTypes.updateReleaseType);
 app.delete("/api/releaseTypes/:releaseTypeID", releaseTypes.releaseTypeByIdValidation, releaseTypes.deleteReleaseType);
+
+/* Playlists */
+app.get("/api/playlists", playlists.getPlaylists);
+app.post("/api/playlists", playlists.createPlaylistValidation, playlists.createPlaylist);
+app.put("/api/playlists", playlists.updatePlaylistValidation, playlists.updatePlaylist);
+app.delete("/api/playlists/:playlistID", playlists.playlistByIdValidation, playlists.deletePlaylist);
 
 /* Genres */
 app.get("/api/genres", genres.getGenres);
