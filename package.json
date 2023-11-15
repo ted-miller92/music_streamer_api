@@ -4,7 +4,8 @@
   "description": "API for Music Streamer App",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "forever start index.js",
+    "stop": "forever stop index.js",
     "test": "npm test"
   },
   "author": "",
