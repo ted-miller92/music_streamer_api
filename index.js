@@ -13,7 +13,7 @@ import genres from "./routes/genres.mjs";
 // import playlistSongs from "./routes/playlistSongs.mjs";
 
 const app = express();
-const port = 2626;
+const port = process.env.PORT;
 
 app.use(json());
 app.use(cors());
