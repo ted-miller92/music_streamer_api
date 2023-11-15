@@ -1,10 +1,11 @@
 import express, { json, urlencoded } from "express";
 import { pool } from "./database/db_connector.js";
+import cors from "cors";
 
 import songs from "./routes/songs.mjs";
 import artists from "./routes/artists.mjs";
 import releases from "./routes/releases.mjs";
-// import releaseTypes from "./routes/releaseTypes.mjs";
+import releaseTypes from "./routes/releaseTypes.mjs";
 import users from "./routes/users.mjs";
 // import playlists from "./routes/playlists.mjs";
 import genres from "./routes/genres.mjs";
@@ -15,8 +16,6 @@ const app = express();
 const port = 2626;
 
 app.use(json());
-
-import cors from "cors";
 app.use(cors());
 
 app.use(
@@ -46,6 +45,13 @@ app.delete("/api/songs", songs.deleteSong)
 app.post("/api/relesases", releases.createRelease);
 // app.put("/api/relesases", releases.updateRelease);
 // app.delete("/api/relesases", releases.deleteRelease);
+
+/* Release Types */
+app.get("/api/releaseTypes", releaseTypes.getReleaseTypes);
+app.get("/api/releaseTypes/:releaseTypeID", releaseTypes.releaseTypeByIdValidation, releaseTypes.getReleaseType);
+app.post("/api/releaseTypes", releaseTypes.createReleaseTypeValidation, releaseTypes.createReleaseType);
+app.put("/api/releaseTypes", releaseTypes.updateReleaseTypeValidation, releaseTypes.updateReleaseType);
+app.delete("/api/releaseTypes/:releaseTypeID", releaseTypes.releaseTypeByIdValidation, releaseTypes.deleteReleaseType);
 
 /* Genres */
 app.get("/api/genres", genres.getGenres);
