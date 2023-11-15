@@ -14,6 +14,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "forever": "^4.0.3",
     "mysql": "^2.18.1",
     "validator.js": "^2.0.4"
   },

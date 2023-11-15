@@ -2,15 +2,30 @@
 
 ## Setting up the server
 
-Run the server by entering the command `npm start`.
+Run the server by entering the command `npm start`. When this is deployed on the flip server, I have changed the start command to the following:
+
+```
+...
+"scripts": {
+    "start": "forever start index.js",
+    "stop": "forever stop index.js",
+    "test": "npm test"
+  },
+  ...
+```
+
+This utilizes the npm `forever` package to leave the server running in the background. 
 
 A local instance of a MySQL database should also be running. See the section [Database Set up](#database-set-up) for notes on this. 
 
 This API uses the `dotenv` package to manage potentially sensitive credential information. Create a file called `.env` in the root directory of this project with the following:
 
 ```
-DB_USER = "[insert username here]"
-DB_PASS = "[insert password here]"
+PORT=[Port number]
+HOST="[host_name]"
+DB_USER="[insert username here]"
+DB_PASS="[insert password here]"
+DATABASE="[database_name]"
 ```
 
 In the `/database/db-connecter.js` file, the database user name and password are retrieved from the `.env` file. 
@@ -63,3 +78,15 @@ This API uses the package `express-validator` to validate and sanitize incoming 
 ## Database Set up
 
 Make sure there is a user with priveleges for SELECT, INSERT, UPDATE, DELETE operations on the correct database schema, and that the login information for this user is reflected in the `.env` file. 
+
+Specifically for setting up on OSU Flip servers, make sure the `database/db_connector.js` file reflects the following, or that the .env file contains the correct environment variables. The `.env` approach is recommended so that the API can be easily run in different environments:
+
+```
+var _pool = createPool({
+    connectionLimit: 100,
+    host: "classmysql.engr.oregonstate.edu",
+    user: "cs340_[username]",
+    password: "[password for mysql user]",
+    database: "cs340_[username]"
+});
+```
