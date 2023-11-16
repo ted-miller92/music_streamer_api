@@ -3,8 +3,8 @@ import {param, body, validationResult, matchedData} from "express-validator";
 
 // validation set for creating User
 const createUserValidation = [
-    body("userName").notEmpty().escape(),
-    body("userEmail").notEmpty().escape()
+    body("userName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("userEmail").notEmpty().isEmail()
 ]
 
 // validation for specificying single User by id
@@ -15,8 +15,8 @@ const userByIdValidation = [
 // validation for updating user
 const updateUserValidation = [
     body("userID").notEmpty().isNumeric().escape(),
-    body("userName").notEmpty().escape(),
-    body("userEmail").notEmpty().escape()
+    body("userName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("userEmail").notEmpty().isEmail()
 ]
 
 const getUser = (req, res) => {
@@ -30,7 +30,7 @@ const getUser = (req, res) => {
     const userID = data.userID;
 
     const query = `SELECT * FROM Users
-            WHERE user_id = ${userID}`;
+            WHERE user_id = ${userID};`;
 
     // query the DB
     pool.query(query, function (err, results, fields) {

@@ -32,7 +32,7 @@ const getPlaylist = (req, res) => {
     const playlistID = data.playlistID;
 
     const query = `SELECT * FROM Playlists
-            WHERE playlist_id = ${playlistID}`;
+            WHERE playlist_id = ${playlistID};`;
 
     // query the DB
     pool.query(query, function (err, results, fields) {
@@ -49,10 +49,10 @@ const getPlaylists = (req, res) => {
     // check for query string
     if (req.query.userID) {
         query = `SELECT * FROM Playlists 
-            WHERE user_id = ${req.query.userID}`;
+            WHERE user_id = ${req.query.userID};`;
     } else if (req.query.playlistID) {
         query = `SELECT * FROM Playlists 
-            WHERE playlist_id = ${req.query.playlistID}`;
+            WHERE playlist_id = ${req.query.playlistID};`;
     } else {
         query = `SELECT * FROM Playlists;`;
     }
@@ -66,29 +66,6 @@ const getPlaylists = (req, res) => {
         }
     });
 }
-
-// const getPlaylistsByUserID = (req, res) => {
-//     const result = validationResult(req);
-
-//     if (!result.isEmpty()){
-//         res.status(400).send(result.array());
-//         return;
-//     }
-//     const data = matchedData(req);
-//     const userID = data.userID;
-    
-//     const query = `SELECT * FROM Playlists
-//                     WHERE user_id = ${userID};`;
-
-//     // query the DB
-//     pool.query(query, function (err, results, fields) {
-//         if (err){
-//             res.status(400).send({message: err.message});
-//         } else {
-//             res.status(200).send(results);
-//         }
-//     });
-// }
 
 const createPlaylist = (req, res) => {
     // validation 
@@ -105,7 +82,7 @@ const createPlaylist = (req, res) => {
 
     const query = `INSERT INTO Playlists(playlist_name, user_id, private)
                     VALUES("${playlistName}", "${userID}", ${isPrivate});`;
-    console.log(query);
+
     // query the DB
     pool.query(query, function (err, results, fields) {
         if (err){
@@ -144,7 +121,7 @@ const updatePlaylist = (req, res) => {
             res.status(400).send(err.code);
         } else if (results.affectedRows === 0) {
             console.log(err)
-            res.status(400).send({message: "User with that id does not exist"});
+            res.status(400).send({message: "Playlist with that id does not exist"});
         } else {
             res.status(200).send(results);
         }
@@ -170,9 +147,9 @@ const deletePlaylist = (req, res) => {
     pool.query(query, (err, results) => {
         if (err) {
             console.log(err.code);
-            res.status(400).send({message: "User not deleted"});
+            res.status(400).send({message: "Playlist not deleted"});
         } else if (results.affectedRows === 0){
-            res.status(400).send({message: "User with that id does not exist"});
+            res.status(400).send({message: "Playlist with that id does not exist"});
         } else {
             res.status(200).send(results);
         }

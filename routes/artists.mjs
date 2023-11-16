@@ -42,10 +42,10 @@ const getArtists = (req, res) => {
 
         if (data.artistID){
             const artistID = data.artistID;
-            query = `SELECT * FROM Artists WHERE artist_id = ${artistID}`;
+            query = `SELECT * FROM Artists WHERE artist_id = ${artistID};`;
         } else if (data.artistName) {
             const artistName = data.artistName;
-            query = `SELECT * FROM Artists WHERE artist_name = "${artistName}"`;
+            query = `SELECT * FROM Artists WHERE artist_name = "${artistName}";`;
         } else {
             query = "SELECT * FROM Artists;"
         }
@@ -77,7 +77,7 @@ const createArtist = (req, res) => {
         
         const query = 
             `INSERT INTO Artists(artist_name, artist_description)
-            VALUES("${artistName}", "${artistDescription}")`;
+            VALUES("${artistName}", "${artistDescription}");`;
         
         pool.query(query, (err, results, fields) => {
             if (err) {

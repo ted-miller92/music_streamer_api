@@ -36,15 +36,15 @@ app.delete("/api/artists", artists.deleteArtistValidation, artists.deleteArtist)
 
 /* Songs */
 app.get("/api/songs", songs.getSongs);
-app.post("/api/songs", songs.createSong);
-app.put("/api/songs", songs.updateSong);
-app.delete("/api/songs", songs.deleteSong)
+app.post("/api/songs", songs.createSongValidation, songs.createSong);
+app.put("/api/songs", songs.updateSongValidation, songs.updateSong);
+app.delete("/api/songs", songs.songByIdValidation, songs.deleteSong);
 
 /* Releases */
-// app.get("/api/relesases", releases.getReleases);
-app.post("/api/relesases", releases.createRelease);
-// app.put("/api/relesases", releases.updateRelease);
-// app.delete("/api/relesases", releases.deleteRelease);
+app.get("/api/relesases", releases.getReleases);
+app.post("/api/relesases/", releases.createReleaseValidation, releases.createRelease);
+app.put("/api/relesases", releases.updateReleaseValidation, releases.updateRelease);
+app.delete("/api/relesases", releases.releaseByIdValidation, releases.deleteRelease);
 
 /* Release Types */
 app.get("/api/releaseTypes", releaseTypes.getReleaseTypes);

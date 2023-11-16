@@ -1,38 +1,162 @@
 import { pool } from "../database/db_connector.js";
-import {body, validationResult} from "express-validator";
+import {param, body, validationResult, matchedData} from "express-validator";
 
-const getReleases = null;
+// validation set for creating Release
+const createReleaseValidation = [
+    body("releaseName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("artistID").notEmpty().isNumeric(),
+    body("releaseTypeID").notEmpty().isNumeric()
+]
 
-const createRelease = (body("releaseName").notEmpty().escape(), (req, res) => {
-    // validation
+// validation for specificying single Release by id
+const releaseByIdValidation = [
+    param("releaseID").notEmpty().isNumeric().escape()
+]
+
+// validation for updating Release
+const updateReleaseValidation = [
+    body("releaseID").notEmpty().isNumeric().escape(),
+    body("releaseName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("artistID").notEmpty().isNumeric(),
+    body("releaseTypeID").notEmpty().isNumeric()
+]
+
+const getRelease = (req, res) => {
     const result = validationResult(req);
 
-    if (result.isEmpty()){
-        // query building
-        const data = matchedData(req);
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
+    const data = matchedData(req);
+    const releaseID = data.releaseID;
 
-        console.log(data);
+    const query = `SELECT * FROM Releases
+        WHERE release_id = ${releaseID};`;
 
-        let query = `INSERT INTO 
-            Releases(release_name, release_type_id, artist_id)
-            VALUES("${data.releaseName}", 
-                    ${data.releaseTypeID}, 
-                    ${data.artistID});`;
-
-        pool.query(query, (err, results, fields) => {
-        if (err) {
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
             res.status(400).send({message: err.message});
         } else {
             res.status(200).send(results);
         }
     });
+}
+
+const getReleases = (req, res) => {
+    var query = "";
+    // check for query string
+    if (req.query.artistID) {
+        query = `SELECT * FROM Releases 
+            WHERE artist_id = ${req.query.artistID};`;
+    } else if (req.query.releaseTypeID) {
+        query = `SELECT * FROM Releases 
+            WHERE release_type_id = ${req.query.releaseTypeID};`;
+    } else {
+        query = `SELECT * FROM Releases;`;
     }
     
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
+
+const createRelease = (req, res) => {
+    // validation 
+    const result = validationResult(req);
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
+    // query building
+    const data = matchedData(req);
+    const releaseName = data.releaseName;
+    const artistID = data.artistID;
+    const releaseTypeID = data.releaseTypeID;
+
+    const query = `INSERT INTO Releases(release_name, artist_id, release_type_id)
+                    VALUES("${releaseName}", "${artistID}", ${releaseTypeID});`;
+
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
+
+const updateRelease = (req, res) => {
+    const result = validationResult(req);
+
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return
+    }
     
-})
+    // build query from validated data
+    const data = matchedData(req);
+    const releaseID = data.releaseID;
+    const releaseName = data.releaseName;
+    const artistID = data.artistID;
+    const releaseTypeID = data.releaseTypeID;
 
-const updateRelease = null;
+    const query = `UPDATE Releases 
+                    SET releaseName = "${releaseName}",
+                    artist_id = "${artistID}",
+                    release_type_id = ${releaseTypeID}
+                    WHERE release_id = ${releaseID};`;
 
-const deleteRelease = null;
+    // execute query
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err)
+            res.status(400).send(err.code);
+        } else if (results.affectedRows === 0) {
+            console.log(err)
+            res.status(400).send({message: "Release with that id does not exist"});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
-export default {getReleases, createRelease, updateRelease, deleteRelease};
+const deleteRelease = (req, res) => {
+    // validation 
+    const result = validationResult(req);
+
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
+    // query building
+    const data = matchedData(req);
+    const releaseID = data.releaseID;
+
+    const query = 
+        `DELETE FROM Releases
+        WHERE release_id = ${releaseID};`
+    
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err.code);
+            res.status(400).send({message: "Release not deleted"});
+        } else if (results.affectedRows === 0){
+            res.status(400).send({message: "Release with that id does not exist"});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
+
+export default {getRelease, getReleases,
+    createRelease, createReleaseValidation, 
+    updateRelease, updateReleaseValidation,
+    deleteRelease, releaseByIdValidation}

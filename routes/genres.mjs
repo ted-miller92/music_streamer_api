@@ -3,7 +3,7 @@ import {param, body, validationResult, matchedData} from "express-validator";
 
 // validation set for creating genre
 const createGenreValidation = [
-    body("genreName").notEmpty().escape()
+    body("genreName").notEmpty().matches(/^[A-Za-z0-9'"]/)
 ]
 
 // validation for specificying single genre by id
@@ -13,7 +13,7 @@ const genreByIdValidation = [
 
 // validation for updating genre
 const updateGenreValidation = [
-    body("genreName").notEmpty().escape(),
+    body("genreName").notEmpty().matches(/^[A-Za-z0-9'"]/),
     body("genreID").notEmpty().escape()
 ]
 
@@ -28,7 +28,7 @@ const getGenre = (req, res) => {
     const genreID = data.genreID;
 
     const query = `SELECT * FROM Genres
-            WHERE genre_id = ${genreID}`;
+            WHERE genre_id = ${genreID};`;
 
     // query the DB
     pool.query(query, function (err, results, fields) {

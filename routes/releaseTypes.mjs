@@ -3,7 +3,7 @@ import {param, body, validationResult, matchedData} from "express-validator";
 
 // validation set for creating releaseType
 const createReleaseTypeValidation = [
-    body("releaseTypeName").notEmpty().escape()
+    body("releaseTypeName").notEmpty().matches(/^[A-Za-z0-9'"]/)
 ]
 
 // validation for specificying single releaseType by id
@@ -14,7 +14,7 @@ const releaseTypeByIdValidation = [
 // validation for updating releaseType
 const updateReleaseTypeValidation = [
     body("releaseTypeID").notEmpty().isNumeric().escape(),
-    body("releaseTypeName").notEmpty().escape()
+    body("releaseTypeName").notEmpty().matches(/^[A-Za-z0-9'"]/)
 ]
 
 const getReleaseType = (req, res) => {
@@ -28,7 +28,7 @@ const getReleaseType = (req, res) => {
     const releaseTypeID = data.releaseTypeID;
 
     const query = `SELECT * FROM Release_Types
-            WHERE release_type_id = ${releaseTypeID}`;
+            WHERE release_type_id = ${releaseTypeID};`;
 
     // query the DB
     pool.query(query, function (err, results, fields) {
