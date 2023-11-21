@@ -10,7 +10,7 @@ import users from "./routes/users.mjs";
 import playlists from "./routes/playlists.mjs";
 import genres from "./routes/genres.mjs";
 import songArtists from "./routes/songArtists.mjs";
-// import playlistSongs from "./routes/playlistSongs.mjs";
+import playlistSongs from "./routes/playlistSongs.mjs";
 
 const app = express();
 const port = process.env.PORT;
@@ -60,6 +60,9 @@ app.get("/api/playlists", playlists.getPlaylistsValidation, playlists.getPlaylis
 app.post("/api/playlists", playlists.createPlaylistValidation, playlists.createPlaylist);
 app.put("/api/playlists", playlists.updatePlaylistValidation, playlists.updatePlaylist);
 app.delete("/api/playlists/:playlistID", playlists.playlistByIdValidation, playlists.deletePlaylist);
+
+/* Playlist_Songs */
+app.get("/api/playlistSongs", playlistSongs.getPlaylistSongsValidation, playlistSongs.getPlaylistSongs);
 
 /* Genres */
 app.get("/api/genres", genres.getGenresValidation, genres.getGenres);
