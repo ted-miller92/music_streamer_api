@@ -1,5 +1,12 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for getting Release(s)
+const getReleasesValidation = [
+    query("releaseID").optional().isNumeric(),
+    query("artistID").optional().isNumeric(),
+    query("releaseTypeID").optional().isNumeric()
+]
 
 // validation set for creating Release
 const createReleaseValidation = [
@@ -21,7 +28,7 @@ const updateReleaseValidation = [
     body("releaseTypeID").notEmpty().isNumeric()
 ]
 
-const getRelease = (req, res) => {
+const getReleases = (req, res) => {
     const result = validationResult(req);
 
     if (!result.isEmpty()){
@@ -29,34 +36,22 @@ const getRelease = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    const releaseID = data.releaseID;
 
-    const query = `SELECT * FROM Releases
-        WHERE release_id = ${releaseID};`;
+    var query = '';
 
-    // query the DB
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
-        } else {
-            res.status(200).send(results);
-        }
-    });
-}
-
-const getReleases = (req, res) => {
-    var query = "";
-    // check for query string
-    if (req.query.artistID) {
-        query = `SELECT * FROM Releases 
-            WHERE artist_id = ${req.query.artistID};`;
-    } else if (req.query.releaseTypeID) {
-        query = `SELECT * FROM Releases 
-            WHERE release_type_id = ${req.query.releaseTypeID};`;
+    if (data.releaseID) {
+        query = `SELECT * FROM Releases
+            WHERE release_id = ${data.releaseID};`;
+    } else if (data.artistID) {
+        query = `SELECT * FROM Releases
+            WHERE artist_id = ${data.artistID};`;
+    } else if (data.releaseTypeID) {
+        query = `SELECT * FROM Releases
+            WHERE release_type_id = ${data.releaseTypeID};`;
     } else {
         query = `SELECT * FROM Releases;`;
     }
-    
+
     // query the DB
     pool.query(query, function (err, results, fields) {
         if (err){
@@ -156,7 +151,7 @@ const deleteRelease = (req, res) => {
     });
 }
 
-export default {getRelease, getReleases,
+export default {getReleases, getReleasesValidation,
     createRelease, createReleaseValidation, 
     updateRelease, updateReleaseValidation,
     deleteRelease, releaseByIdValidation}

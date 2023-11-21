@@ -1,5 +1,10 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for get genre(s)
+const getGenresValidation = [
+    query("genreID").optional().isNumeric()
+]
 
 // validation set for creating genre
 const createGenreValidation = [
@@ -17,7 +22,7 @@ const updateGenreValidation = [
     body("genreID").notEmpty().escape()
 ]
 
-const getGenre = (req, res) => {
+const getGenres = (req, res) => {
     const result = validationResult(req);
 
     if (!result.isEmpty()){
@@ -25,23 +30,14 @@ const getGenre = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    const genreID = data.genreID;
-
-    const query = `SELECT * FROM Genres
-            WHERE genre_id = ${genreID};`;
-
-    // query the DB
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
-        } else {
-            res.status(200).send(results);
-        }
-    });
-}
-
-const getGenres = (req, res) => {
-    const query = `SELECT * FROM Genres;`;
+    var query = '';
+    
+    if (data.genreID) {
+        query = `SELECT * FROM Genres
+            WHERE genre_id = ${data.genreID};`;
+    } else {
+        query = `SELECT * FROM Genres;`;
+    }
 
     // query the DB
     pool.query(query, function (err, results, fields) {
@@ -140,8 +136,7 @@ const deleteGenre = (req, res) => {
     }
 }
 
-export default {getGenre, getGenres, 
+export default {getGenres, getGenresValidation, 
         createGenre, createGenreValidation, 
         updateGenre, updateGenreValidation,
-        deleteGenre, 
-        genreByIdValidation}
+        deleteGenre, genreByIdValidation}

@@ -5,8 +5,8 @@ import {query, body, validationResult, matchedData} from "express-validator";
 
 // validation for getting Artists
 const getArtistsValidation = [
-    query("artistID").escape(),
-    query("artistName").escape()
+    query("artistID").optional().isNumeric(),
+    query("artistName").optional()
 ]
 
 // validation for creating Artists
@@ -34,31 +34,29 @@ const getArtists = (req, res) => {
     if (!result.isEmpty()){
         res.status(400).send(result.array());
         return;
-    } else {
-        const data = matchedData(req);
-    
-        // check for query parameters, build query
-        let query = null;
-
-        if (data.artistID){
-            const artistID = data.artistID;
-            query = `SELECT * FROM Artists WHERE artist_id = ${artistID};`;
-        } else if (data.artistName) {
-            const artistName = data.artistName;
-            query = `SELECT * FROM Artists WHERE artist_name = "${artistName}";`;
-        } else {
-            query = "SELECT * FROM Artists;"
-        }
-        
-        // query the DB
-        pool.query(query, function (err, results, fields) {
-            if (err){
-                res.status(400).send({message: err.message});
-            } else {
-                res.status(200).send(results);
-            }
-        });
     }
+    const data = matchedData(req);
+    console.log(data);
+    // check for query parameters, build query
+    let query = '';
+
+    if (data.artistID){
+        query = `SELECT * FROM Artists WHERE artist_id = ${data.artistID};`;
+    } else if (data.artistName) {
+        query = `SELECT * FROM Artists WHERE artist_name = "${data.artistName}";`;
+    } else {
+        query = `SELECT * FROM Artists;`;
+    }
+    
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+
 }
 
 const createArtist = (req, res) => {
@@ -150,8 +148,7 @@ const deleteArtist = (req, res) => {
     }
 }
 
-export default {
-    getArtistsValidation, getArtists, 
+export default {getArtistsValidation, getArtists, 
     createArtistValidation, createArtist, 
     updateArtistValidation, updateArtist, 
     deleteArtistValidation, deleteArtist

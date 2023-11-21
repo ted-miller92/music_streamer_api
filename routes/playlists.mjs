@@ -1,5 +1,11 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for getting Playlist(s)
+const getPlaylistsValidation = [
+    query("playlistID").optional().isNumeric(),
+    query("userID").optional().isNumeric(),
+]
 
 // validation set for creating Playlist
 const createPlaylistValidation = [
@@ -21,7 +27,8 @@ const updatePlaylistValidation = [
     body("isPrivate").notEmpty().isNumeric().escape()
 ]
 
-const getPlaylist = (req, res) => {
+const getPlaylists = (req, res) => {
+    // Handles get requests with or without url query parameters
     const result = validationResult(req);
 
     if (!result.isEmpty()){
@@ -29,34 +36,19 @@ const getPlaylist = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    const playlistID = data.playlistID;
 
-    const query = `SELECT * FROM Playlists
-            WHERE playlist_id = ${playlistID};`;
+    var query = '';
 
-    // query the DB
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
-        } else {
-            res.status(200).send(results);
-        }
-    });
-}
-
-const getPlaylists = (req, res) => {
-    var query = "";
-    // check for query string
-    if (req.query.userID) {
-        query = `SELECT * FROM Playlists 
-            WHERE user_id = ${req.query.userID};`;
-    } else if (req.query.playlistID) {
-        query = `SELECT * FROM Playlists 
-            WHERE playlist_id = ${req.query.playlistID};`;
+    if (data.playlistID) {
+        query = `SELECT * FROM Playlists
+            WHERE playlist_id = ${data.playlistID};`;
+    } else if (data.userID) {
+        query = `SELECT * FROM Playlists
+            WHERE user_id = ${data.userID};`;
     } else {
         query = `SELECT * FROM Playlists;`;
     }
-    
+
     // query the DB
     pool.query(query, function (err, results, fields) {
         if (err){
@@ -64,7 +56,7 @@ const getPlaylists = (req, res) => {
         } else {
             res.status(200).send(results);
         }
-    });
+    });    
 }
 
 const createPlaylist = (req, res) => {
@@ -156,7 +148,7 @@ const deletePlaylist = (req, res) => {
     });
 }
 
-export default {getPlaylist, getPlaylists,
+export default {getPlaylists, getPlaylistsValidation, 
     createPlaylist, createPlaylistValidation, 
     updatePlaylist, updatePlaylistValidation,
     deletePlaylist, playlistByIdValidation}

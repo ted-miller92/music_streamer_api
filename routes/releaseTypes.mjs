@@ -1,5 +1,10 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for getting ReleaseType(s)
+const getReleaseTypesValidation = [
+    query("releaseTypeID").optional().isNumeric()
+]
 
 // validation set for creating releaseType
 const createReleaseTypeValidation = [
@@ -17,7 +22,7 @@ const updateReleaseTypeValidation = [
     body("releaseTypeName").notEmpty().matches(/^[A-Za-z0-9'"]/)
 ]
 
-const getReleaseType = (req, res) => {
+const getReleaseTypes = (req, res) => {
     const result = validationResult(req);
 
     if (!result.isEmpty()){
@@ -25,23 +30,14 @@ const getReleaseType = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    const releaseTypeID = data.releaseTypeID;
+    var query = '';
 
-    const query = `SELECT * FROM Release_Types
-            WHERE release_type_id = ${releaseTypeID};`;
-
-    // query the DB
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
-        } else {
-            res.status(200).send(results);
-        }
-    });
-}
-
-const getReleaseTypes = (req, res) => {
-    const query = `SELECT * FROM Release_Types;`;
+    if (data.releaseTypeID) {
+        query = `SELECT * FROM Release_Types
+            WHERE release_type_id = ${data.releaseTypeID};`;
+    } else {
+        query = `SELECT * FROM Release_Types;`
+    }
 
     // query the DB
     pool.query(query, function (err, results, fields) {
@@ -137,7 +133,7 @@ const deleteReleaseType = (req, res) => {
     });
 }
 
-export default {getReleaseType, getReleaseTypes, releaseTypeByIdValidation,
+export default {getReleaseTypes, getReleaseTypesValidation,
         createReleaseType, createReleaseTypeValidation, 
         updateReleaseType, updateReleaseTypeValidation,
-        deleteReleaseType}
+        deleteReleaseType, releaseTypeByIdValidation}

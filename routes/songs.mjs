@@ -1,5 +1,12 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for getting Song(s)
+const getSongsValidation = [
+    query("songID").optional().isNumeric(),
+    query("releaseID").optional().isNumeric(),
+    query("genreID").optional().isNumeric(),
+];
 
 // validation set for creating Song
 const createSongValidation = [
@@ -23,25 +30,31 @@ const updateSongValidation = [
 ]
 
 const getSongs = (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
+    const data = matchedData(req);
     var query = "";
     // check for query string
-    if (req.query.songID) {
+    if (data.songID) {
         // get a single song by id
         query = `SELECT * FROM Songs
-            WHERE song_id = ${req.query.songID};`;
-    } else if (req.query.artistID) {
+            WHERE song_id = ${data.songID};`;
+    } else if (data.artistID) {
         // get all songs by one artist
         query = `SELECT * FROM Songs 
             INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
-            WHERE Song_Artists.artist_id = ${req.query.artistID};`;
-    } else if (req.query.releaseID) {
+            WHERE Song_Artists.artist_id = ${data.artistID};`;
+    } else if (data.releaseID) {
         // get all songs from a single release 
         query = `SELECT * FROM Songs
-            WHERE release_id = ${req.query.releaseID};`;
-    } else if (req.query.genreID) {
+            WHERE release_id = ${data.releaseID};`;
+    } else if (data.genreID) {
         // get all songs of a certain genre
         query = `SELECT * FROM Songs
-            WHERE genre_id = ${req.query.genreID};`;
+            WHERE genre_id = ${data.genreID};`;
     } else {
         query = `SELECT * FROM Songs;`;
     }
@@ -147,7 +160,7 @@ const deleteSong = (req, res) => {
     });
 }
 
-export default {getSongs, songByIdValidation,
+export default {getSongs, getSongsValidation,
     createSong, createSongValidation, 
     updateSong, updateSongValidation,
-    deleteSong}
+    deleteSong, songByIdValidation}

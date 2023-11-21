@@ -1,5 +1,11 @@
 import { pool } from "../database/db_connector.js";
-import {param, body, validationResult, matchedData} from "express-validator";
+import {query, param, body, validationResult, matchedData} from "express-validator";
+
+// validation for getting User(s)
+const getUsersValidation = [
+    query("userID").optional().isNumeric(),
+    query("userEmail").optional().isEmail()
+]
 
 // validation set for creating User
 const createUserValidation = [
@@ -19,7 +25,7 @@ const updateUserValidation = [
     body("userEmail").notEmpty().isEmail()
 ]
 
-const getUser = (req, res) => {
+const getUsers = (req, res) => {
     const result = validationResult(req);
 
     if (!result.isEmpty()){
@@ -27,23 +33,18 @@ const getUser = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    const userID = data.userID;
+    var query = '';
 
-    const query = `SELECT * FROM Users
-            WHERE user_id = ${userID};`;
-
-    // query the DB
-    pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
-        } else {
-            res.status(200).send(results);
-        }
-    });
-}
-
-const getUsers = (req, res) => {
-    const query = `SELECT * FROM Users;`;
+    if (data.userID) {
+        query = `SELECT * FROM Users
+            WHERE user_id = ${data.userID};`;
+    } else if (data.userEmail) {
+        console.log(data.userEmail);
+        query = `SELECT * FROM Users
+        WHERE user_email = "${data.userEmail}";`;
+    } else {
+        query = `SELECT * FROM Users;`;
+    }
 
     // query the DB
     pool.query(query, function (err, results, fields) {
@@ -141,7 +142,7 @@ const deleteUser = (req, res) => {
     });
 }
 
-export default {getUser, getUsers, userByIdValidation,
+export default {getUsers, getUsersValidation,
         createUser, createUserValidation, 
         updateUser, updateUserValidation,
-        deleteUser}
+        deleteUser, userByIdValidation}
