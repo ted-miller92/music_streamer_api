@@ -37,7 +37,6 @@ const getSongsArtists = (req, res) => {
 
     const data = matchedData(req);
     var query = '';
-    console.log(data);
 
     if (data.songID) {
         query = `SELECT * FROM Song_Artists

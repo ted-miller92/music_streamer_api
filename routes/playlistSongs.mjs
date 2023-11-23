@@ -62,78 +62,81 @@ const getPlaylistSongs = (req, res) => {
     });
 }
 
-// create a new song_artist entry
-// const createSongArtist = (req, res) => {
-//     const result = validationResult(req);
+// create a new Playlist_Song entry
+const createPlaylistSong = (req, res) => {
+    const result = validationResult(req);
 
-//     if (!result.isEmpty()){
-//         res.status(400).send(result.array());
-//         return;
-//     }
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
 
-//     const data = matchedData(req);
+    const data = matchedData(req);
 
-//     const query = `INSERT INTO Song_Artists(song_id, artist_id)
-//         VALUES(${data.song_id}, ${data.artistID});`;
+    const query = `INSERT INTO Playlist_Songs(playlist_id, song_id)
+        VALUES(${data.playlistID}, ${data.song_id});`;
 
-//     // query the DB
-//     pool.query(query, function (err, results, fields) {
-//         if (err){
-//             res.status(400).send({message: err.message});
-//         } else {
-//             res.status(200).send(results);
-//         }
-//     });
-// }
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
-// // update song_artist entry
-// const updateSongArtist = (req, res) => {
-//     const result = validationResult(req);
+// update song_artist entry
+const updatePlaylistSong = (req, res) => {
+    const result = validationResult(req);
 
-//     if (!result.isEmpty()){
-//         res.status(400).send(result.array());
-//         return;
-//     }
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
 
-//     const data = matchedData(req);
+    const data = matchedData(req);
 
-//     const query = `UPDATE Song_Artists
-//         SET song_id = ${data.songID},
-//         artist_id = ${data.artistID}
-//         WHERE song_artist_id = ${data.songArtistID}`;
+    const query = `UPDATE Playlist_Songs
+        SET playlist_id = ${data.playlistID},
+        song_id = ${data.songID}
+        WHERE playlist_song_id = ${data.playlistSongID}`;
     
-//     // query the DB
-//     pool.query(query, function (err, results, fields) {
-//         if (err){
-//             res.status(400).send({message: err.message});
-//         } else {
-//             res.status(200).send(results);
-//         }
-//     });
-// }
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
-// // delete a song_artist record
-// const deleteSongArtist = (req, res) => {
-//     const result = validationResult(req);
+// delete a song_artist record
+const deletePlaylistSong = (req, res) => {
+    const result = validationResult(req);
 
-//     if (!result.isEmpty()){
-//         res.status(400).send(result.array());
-//         return;
-//     }
+    if (!result.isEmpty()){
+        res.status(400).send(result.array());
+        return;
+    }
 
-//     const data = matchedData(req);
+    const data = matchedData(req);
 
-//     const query = `DELETE FROM Song_Artists
-//         WHERE song_id = ${data.songArtistID};`;
+    const query = `DELETE FROM Playlist_Songs
+        WHERE playlist_song_id = ${data.playlistSongID};`;
 
-//     // query the DB
-//     pool.query(query, function (err, results, fields) {
-//         if (err){
-//             res.status(400).send({message: err.message});
-//         } else {
-//             res.status(200).send(results);
-//         }
-//     });
-// }
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err){
+            res.status(400).send({message: err.message});
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
-export default {getPlaylistSongs, getPlaylistSongsValidation}
+export default {getPlaylistSongs, getPlaylistSongsValidation,
+    createPlaylistSong, createPlaylistSongValidation,
+    updatePlaylistSong, updatePlaylistSongValidation,
+    deletePlaylistSong, playlistSongByIdValidation}

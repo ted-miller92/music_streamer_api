@@ -42,6 +42,9 @@ app.delete("/api/songs", songs.songByIdValidation, songs.deleteSong);
 
 /* Song Artists */
 app.get("/api/songArtists", songArtists.getSongArtistsValidation, songArtists.getSongsArtists);
+app.post("/api/songArtists", songArtists.createSongArtistValidation, songArtists.createSongArtistValidation);
+app.put("/api/songArtists", songArtists.updateSongArtistValidation, songArtists.updateSongArtist);
+app.delete("/api/songArtists", songArtists.songArtistByIdValidation, songArtists.deleteSongArtist);
 
 /* Releases */
 app.get("/api/releases", releases.getReleasesValidation, releases.getReleases);
@@ -63,6 +66,9 @@ app.delete("/api/playlists/:playlistID", playlists.playlistByIdValidation, playl
 
 /* Playlist_Songs */
 app.get("/api/playlistSongs", playlistSongs.getPlaylistSongsValidation, playlistSongs.getPlaylistSongs);
+app.post("/api/playlistSongs", playlistSongs.createPlaylistSongValidation, playlistSongs.createPlaylistSong);
+app.put("/api/playlistSongs", playlistSongs.updatePlaylistSongValidation, playlistSongs.updatePlaylistSong);
+app.delete("/api/playlistSongs", playlistSongs.playlistSongByIdValidation, playlistSongs.deletePlaylistSong);
 
 /* Genres */
 app.get("/api/genres", genres.getGenresValidation, genres.getGenres);
