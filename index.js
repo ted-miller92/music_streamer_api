@@ -32,13 +32,13 @@ app.get("/", (req, res) => {
 app.get("/api/artists", artists.getArtistsValidation, artists.getArtists);
 app.post("/api/artists", artists.createArtistValidation, artists.createArtist);
 app.put("/api/artists", artists.updateArtistValidation, artists.updateArtist);
-app.delete("/api/artists", artists.deleteArtistValidation, artists.deleteArtist);
+app.delete("/api/artists/:artistID", artists.deleteArtistValidation, artists.deleteArtist);
 
 /* Songs */
 app.get("/api/songs", songs.getSongsValidation, songs.getSongs);
 app.post("/api/songs", songs.createSongValidation, songs.createSong);
 app.put("/api/songs", songs.updateSongValidation, songs.updateSong);
-app.delete("/api/songs", songs.songByIdValidation, songs.deleteSong);
+app.delete("/api/songs/:songID", songs.songByIdValidation, songs.deleteSong);
 
 /* Song Artists */
 app.get("/api/songArtists", songArtists.getSongArtistsValidation, songArtists.getSongsArtists);
@@ -50,7 +50,7 @@ app.delete("/api/songArtists", songArtists.songArtistByIdValidation, songArtists
 app.get("/api/releases", releases.getReleasesValidation, releases.getReleases);
 app.post("/api/releases", releases.createReleaseValidation, releases.createRelease);
 app.put("/api/releases", releases.updateReleaseValidation, releases.updateRelease);
-app.delete("/api/releases", releases.releaseByIdValidation, releases.deleteRelease);
+app.delete("/api/releases/:releaseID", releases.releaseByIdValidation, releases.deleteRelease);
 
 /* Release Types */
 app.get("/api/releaseTypes", releaseTypes.getReleaseTypesValidation, releaseTypes.getReleaseTypes);

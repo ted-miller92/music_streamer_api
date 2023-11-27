@@ -130,14 +130,15 @@ const deleteRelease = (req, res) => {
     if (!result.isEmpty()){
         res.status(400).send(result.array());
         return;
-    }
-    // query building
-    const data = matchedData(req);
-    const releaseID = data.releaseID;
+    } else{
 
+        // query building
+        const data = matchedData(req);
+        const releaseID = data.releaseID;
+        
     const query = 
-        `DELETE FROM Releases
-        WHERE release_id = ${releaseID};`
+    `DELETE FROM Releases
+    WHERE release_id = ${releaseID};`
     
     pool.query(query, (err, results) => {
         if (err) {
@@ -149,6 +150,7 @@ const deleteRelease = (req, res) => {
             res.status(200).send(results);
         }
     });
+}
 }
 
 export default {getReleases, getReleasesValidation,
