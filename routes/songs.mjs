@@ -107,7 +107,7 @@ const updateSong = (req, res) => {
     const data = matchedData(req);
     const songID = data.songID;
     const songName = data.songName;
-    const releaseID = data.releaseTypeID;
+    const releaseID = data.releaseID;
     const genreID = data.genreID;
     const streamCount = data.streamCount;
 
