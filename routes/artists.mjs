@@ -1,5 +1,5 @@
 import { pool } from "../database/db_connector.js";
-import {query, body, validationResult, matchedData} from "express-validator";
+import {param, query, body, validationResult, matchedData} from "express-validator";
 
 /* Validation Schema */
 
