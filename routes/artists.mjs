@@ -23,8 +23,8 @@ const updateArtistValidation = [
 ]
 
 // validation for deleting Artist
-const deleteArtistValidation = [
-    body("artistID").notEmpty().escape()
+const artistByIdValidation = [
+    param("artistID").notEmpty().escape()
 ]
 
 const getArtists = (req, res) => {
@@ -151,5 +151,5 @@ const deleteArtist = (req, res) => {
 export default {getArtistsValidation, getArtists, 
     createArtistValidation, createArtist, 
     updateArtistValidation, updateArtist, 
-    deleteArtistValidation, deleteArtist
+    artistByIdValidation, deleteArtist
 };

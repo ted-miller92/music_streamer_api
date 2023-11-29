@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 app.get("/api/artists", artists.getArtistsValidation, artists.getArtists);
 app.post("/api/artists", artists.createArtistValidation, artists.createArtist);
 app.put("/api/artists", artists.updateArtistValidation, artists.updateArtist);
-app.delete("/api/artists/:artistID", artists.deleteArtistValidation, artists.deleteArtist);
+app.delete("/api/artists/:artistID", artists.artistByIdValidation, artists.deleteArtist);
 
 /* Songs */
 app.get("/api/songs", songs.getSongsValidation, songs.getSongs);
