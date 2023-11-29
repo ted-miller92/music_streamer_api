@@ -82,7 +82,7 @@ const createArtist = (req, res) => {
                 console.log(err.code);
                 res.status(400).send({message : "Record not created"});
             } else {
-                res.status(201).send(results);
+                res.status(200).send(results);
             }
         });
     }
