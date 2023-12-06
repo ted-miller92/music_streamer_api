@@ -36,16 +36,22 @@ const getArtists = (req, res) => {
         return;
     }
     const data = matchedData(req);
-    console.log(data);
     // check for query parameters, build query
     let query = '';
 
     if (data.artistID){
-        query = `SELECT * FROM Artists WHERE artist_id = ${data.artistID};`;
+        query = `SELECT * FROM Artists 
+            WHERE artist_id = ${data.artistID};
+            `;
     } else if (data.artistName) {
-        query = `SELECT * FROM Artists WHERE artist_name = "${data.artistName}";`;
+        query = `SELECT * FROM Artists 
+            WHERE artist_name = "${data.artistName}"
+            ORDER BY Artists.artist_name ASC;
+            `;
     } else {
-        query = `SELECT * FROM Artists;`;
+        query = `SELECT * FROM Artists 
+        ORDER BY Artists.artist_name ASC;
+        `;
     }
     
     // query the DB

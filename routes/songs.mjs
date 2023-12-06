@@ -4,8 +4,10 @@ import {query, param, body, validationResult, matchedData} from "express-validat
 // validation for getting Song(s)
 const getSongsValidation = [
     query("songID").optional().isNumeric(),
+    query("artistID").optional().isNumeric(),
     query("releaseID").optional().isNumeric(),
     query("genreID").optional().isNumeric(),
+    query("searchSong").optional()
 ];
 
 // validation set for creating Song
@@ -42,21 +44,43 @@ const getSongs = (req, res) => {
         // get a single song by id
         query = `SELECT * FROM Songs
             WHERE song_id = ${data.songID};`;
+    } else if (data.searchSong) {
+        // search query
+        query = `SELECT * FROM Songs
+            INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            INNER JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
+            INNER JOIN Releases ON Songs.release_id = Releases.release_id
+            INNER JOIN Genres ON Songs.genre_id = Genres.genre_id
+            WHERE Songs.song_name LIKE '%${data.searchSong}%';
+        `;
     } else if (data.artistID) {
         // get all songs by one artist
         query = `SELECT * FROM Songs 
             INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            INNER JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
+            INNER JOIN Releases ON Songs.release_id = Releases.release_id
+            INNER JOIN Genres ON Songs.genre_id = Genres.genre_id
             WHERE Song_Artists.artist_id = ${data.artistID};`;
     } else if (data.releaseID) {
         // get all songs from a single release 
         query = `SELECT * FROM Songs
-            WHERE release_id = ${data.releaseID};`;
+            INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            INNER JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
+            INNER JOIN Releases ON Songs.release_id = Releases.release_id
+            INNER JOIN Genres ON Songs.genre_id = Genres.genre_id
+            WHERE Songs.release_id = ${data.releaseID};
+        `;
     } else if (data.genreID) {
         // get all songs of a certain genre
         query = `SELECT * FROM Songs
             WHERE genre_id = ${data.genreID};`;
     } else {
-        query = `SELECT * FROM Songs;`;
+        query = `SELECT * FROM Songs
+            JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
+            JOIN Releases ON Songs.release_id = Releases.release_id
+            JOIN Genres ON Songs.genre_id = Genres.genre_id;
+        `;
     }
     
     // query the DB
@@ -82,8 +106,10 @@ const createSong = (req, res) => {
     const releaseID = data.releaseID;
     const genreID = data.genreID;
 
-    const query = `INSERT INTO Songs(song_name, release_id, genre_id, stream_count)
-                    VALUES("${songName}", "${releaseID}", ${genreID}, 0);`;
+    const query = `
+            INSERT INTO Songs(song_name, release_id, genre_id, stream_count)
+            VALUES("${songName}", ${releaseID}, ${genreID}, 0);    
+    `;
 
     // query the DB
     pool.query(query, function (err, results, fields) {

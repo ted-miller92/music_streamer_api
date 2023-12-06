@@ -7,7 +7,8 @@ var _pool = createPool({
     host: process.env.HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-    database: process.env.DATABASE
+    database: process.env.DATABASE,
+    multipleStatements: true
 });
 
 export { _pool as pool };

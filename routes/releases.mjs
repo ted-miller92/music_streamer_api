@@ -44,12 +44,22 @@ const getReleases = (req, res) => {
             WHERE release_id = ${data.releaseID};`;
     } else if (data.artistID) {
         query = `SELECT * FROM Releases
+            INNER JOIN Release_Types 
+            ON Releases.release_type_id = Release_Types.release_type_id
             WHERE artist_id = ${data.artistID};`;
     } else if (data.releaseTypeID) {
         query = `SELECT * FROM Releases
             WHERE release_type_id = ${data.releaseTypeID};`;
     } else {
-        query = `SELECT * FROM Releases;`;
+        query = `
+            SELECT Releases.release_id, Releases.release_name, 
+            Artists.artist_id, Artists.artist_name,
+            Release_Types.release_type_id, Release_Types.release_type_name 
+            FROM Releases
+            INNER JOIN Artists ON Releases.artist_id = Artists.artist_id
+            INNER JOIN Release_Types ON Releases.release_type_id = Release_Types.release_type_id
+            ORDER BY Artists.artist_name ASC;
+        `;
     }
 
     // query the DB
