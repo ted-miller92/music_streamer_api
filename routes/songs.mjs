@@ -76,10 +76,10 @@ const getSongs = (req, res) => {
             WHERE genre_id = ${data.genreID};`;
     } else {
         query = `SELECT * FROM Songs
-            JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
-            JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
-            JOIN Releases ON Songs.release_id = Releases.release_id
-            JOIN Genres ON Songs.genre_id = Genres.genre_id;
+            INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
+            INNER JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
+            INNER JOIN Releases ON Songs.release_id = Releases.release_id
+            INNER JOIN Genres ON Songs.genre_id = Genres.genre_id;
         `;
     }
     
