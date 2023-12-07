@@ -114,7 +114,7 @@ const updateRelease = (req, res) => {
     const releaseTypeID = data.releaseTypeID;
 
     const query = `UPDATE Releases 
-                    SET releaseName = "${releaseName}",
+                    SET release_name = "${releaseName}",
                     artist_id = "${artistID}",
                     release_type_id = ${releaseTypeID}
                     WHERE release_id = ${releaseID};`;

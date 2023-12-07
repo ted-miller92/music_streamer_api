@@ -1,5 +1,11 @@
 # Music Streamer API
 
+This is the server code for a music streamer application. It emulates a back end for administration purposes, where a user can perform CRUD operations on an associated database. 
+
+## General Citations
+
+The structure of the route handlers was adapted from a project and starter code for Oregon State University's CS 290 Web Development class. That code originally used MongoDB as a database, but this has been changed to use MariaDB and MySQL as a database. The basic structure of using a `db_connector.js` file has been adopted from code from an activity in OSU's CS 340, Introduction to Databases. 
+
 ## Setting up the server
 
 Run the server by entering the command `npm start`. When this is deployed on the flip server, I have changed the start command to the following:
