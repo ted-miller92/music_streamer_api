@@ -11,12 +11,12 @@ const getPlaylistSongsValidation = [
 // validation set for creating Playlist_Song record
 const createPlaylistSongValidation = [
     body("songID").notEmpty().isNumeric(),
-    body("artistID").notEmpty().isNumeric()
+    body("playlistID").notEmpty().isNumeric()
 ]
 
 // validation for specificying single Playlist_Song by id
 const playlistSongByIdValidation = [
-    param("songArtistID").notEmpty().isNumeric().escape()
+    param("songPlaylistID").notEmpty().isNumeric().escape()
 ]
 
 // validation for updating Playlist_Song
@@ -74,7 +74,7 @@ const createPlaylistSong = (req, res) => {
     const data = matchedData(req);
 
     const query = `INSERT INTO Playlist_Songs(playlist_id, song_id)
-        VALUES(${data.playlistID}, ${data.song_id});`;
+        VALUES(${data.playlistID}, ${data.songID});`;
 
     // query the DB
     pool.query(query, function (err, results, fields) {
