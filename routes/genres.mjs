@@ -1,37 +1,43 @@
 import { pool } from "../database/db_connector.js";
-import {query, param, body, validationResult, matchedData} from "express-validator";
+import {
+    query,
+    param,
+    body,
+    validationResult,
+    matchedData,
+} from "express-validator";
 
 // validation for get genre(s)
-const getGenresValidation = [
-    query("genreID").optional().isNumeric()
-]
+const getGenresValidation = [query("genreID").optional().isNumeric()];
 
 // validation set for creating genre
 const createGenreValidation = [
-    body("genreName").notEmpty().matches(/^[A-Za-z0-9'"]/)
-]
+    body("genreName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
+];
 
 // validation for specificying single genre by id
-const genreByIdValidation = [
-    param("genreID").notEmpty().escape()
-]
+const genreByIdValidation = [param("genreID").notEmpty().escape()];
 
 // validation for updating genre
 const updateGenreValidation = [
-    body("genreName").notEmpty().matches(/^[A-Za-z0-9'"]/),
-    body("genreID").notEmpty().escape()
-]
+    body("genreName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
+    body("genreID").notEmpty().escape(),
+];
 
 const getGenres = (req, res) => {
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
+
+    // query building
     const data = matchedData(req);
-    var query = '';
-    
+    var query = "";
     if (data.genreID) {
         query = `SELECT * FROM Genres
             WHERE genre_id = ${data.genreID};`;
@@ -41,54 +47,50 @@ const getGenres = (req, res) => {
 
     // query the DB
     pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+        if (err) {
+            res.status(400).send({ message: err.message });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const createGenre = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
-    } else {
-        const data = matchedData(req);
-
-        // query building
-        const genreName = data.genreName;
-    
-        const query = `INSERT INTO Genres(genre_name)
-                        VALUES("${genreName}");`;
-
-        // query the DB
-        pool.query(query, function (err, results, fields) {
-            if (err){
-                res.status(400).send({message: err.message});
-            } else {
-                res.status(200).send(results);
-            }
-        });
     }
-}
+
+    // query building
+    const data = matchedData(req);
+    const genreName = data.genreName;
+    const query = `INSERT INTO Genres(genre_name)
+                    VALUES("${genreName}");`;
+
+    // query the DB
+    pool.query(query, function (err, results, fields) {
+        if (err) {
+            res.status(400).send({ message: err.message });
+        } else {
+            res.status(200).send(results);
+        }
+    });
+};
 
 const updateGenre = (req, res) => {
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
-        return
+        return;
     }
-    
+
     // build query from validated data
     const data = matchedData(req);
     const genreID = data.genreID;
     const genreName = data.genreName;
-
     const query = `UPDATE Genres 
                     SET genre_name = "${genreName}"
                     WHERE genre_id = ${genreID};`;
@@ -96,47 +98,55 @@ const updateGenre = (req, res) => {
     // execute query
     pool.query(query, (err, results) => {
         if (err) {
-            console.log(err)
+            console.log(err);
             res.status(400).send(err.code);
         } else if (results.affectedRows === 0) {
-            console.log(err)
-            res.status(400).send({message: "Genre with that id does not exist"});
+            console.log(err);
+            res.status(400).send({
+                message: "Genre with that id does not exist",
+            });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const deleteGenre = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
-    } else {
-        // query building
-        const data = matchedData(req);
-        const genreID = data.genreID;
-
-        const query = 
-            `DELETE FROM Genres
-            WHERE genre_id = ${genreID};`
-        
-        pool.query(query, (err, results) => {
-            if (err) {
-                console.log(err.code);
-                res.status(400).send({message: "Genre not deleted"});
-            } else if (results.affectedRows === 0){
-                res.status(400).send({message: "Genre with that id does not exist"});
-            } else {
-                res.status(200).send(results);
-            }
-        });
     }
-}
 
-export default {getGenres, getGenresValidation, 
-        createGenre, createGenreValidation, 
-        updateGenre, updateGenreValidation,
-        deleteGenre, genreByIdValidation}
+    // query building
+    const data = matchedData(req);
+    const genreID = data.genreID;
+    const query = `DELETE FROM Genres
+        WHERE genre_id = ${genreID};`;
+
+    // query the db
+    pool.query(query, (err, results) => {
+        if (err) {
+            console.log(err.code);
+            res.status(400).send({ message: "Genre not deleted" });
+        } else if (results.affectedRows === 0) {
+            res.status(400).send({
+                message: "Genre with that id does not exist",
+            });
+        } else {
+            res.status(200).send(results);
+        }
+    });
+};
+
+export default {
+    getGenres,
+    getGenresValidation,
+    createGenre,
+    createGenreValidation,
+    updateGenre,
+    updateGenreValidation,
+    deleteGenre,
+    genreByIdValidation,
+};

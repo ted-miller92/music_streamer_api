@@ -1,5 +1,11 @@
 import { pool } from "../database/db_connector.js";
-import {query, param, body, validationResult, matchedData} from "express-validator";
+import {
+    query,
+    param,
+    body,
+    validationResult,
+    matchedData,
+} from "express-validator";
 
 // validation for getting Song(s)
 const getSongsValidation = [
@@ -7,39 +13,44 @@ const getSongsValidation = [
     query("artistID").optional().isNumeric(),
     query("releaseID").optional().isNumeric(),
     query("genreID").optional().isNumeric(),
-    query("searchSong").optional()
+    query("searchSong").optional(),
 ];
 
 // validation set for creating Song
 const createSongValidation = [
-    body("songName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("songName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
     body("releaseID").notEmpty().isNumeric(),
-    body("genreID").notEmpty().isNumeric()
-]
+    body("genreID").notEmpty().isNumeric(),
+];
 
 // validation for specificying single Song by id
-const songByIdValidation = [
-    param("songID").notEmpty().isNumeric().escape()
-]
+const songByIdValidation = [param("songID").notEmpty().isNumeric().escape()];
 
 // validation for updating Song
 const updateSongValidation = [
     body("songID").notEmpty().isNumeric().escape(),
-    body("songName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("songName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
     body("releaseID").notEmpty().isNumeric(),
     body("genreID").notEmpty().isNumeric(),
-    body("streamCount").notEmpty().isNumeric()
-]
+    body("streamCount").notEmpty().isNumeric(),
+];
 
 const getSongs = (req, res) => {
+    // validation
     const result = validationResult(req);
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
+
+    // query building
     const data = matchedData(req);
     var query = "";
-    // check for query string
+
     if (data.songID) {
         // get a single song by id
         query = `SELECT * FROM Songs
@@ -62,7 +73,7 @@ const getSongs = (req, res) => {
             INNER JOIN Genres ON Songs.genre_id = Genres.genre_id
             WHERE Song_Artists.artist_id = ${data.artistID};`;
     } else if (data.releaseID) {
-        // get all songs from a single release 
+        // get all songs from a single release
         query = `SELECT * FROM Songs
             INNER JOIN Song_Artists ON Songs.song_id = Song_Artists.song_id
             INNER JOIN Artists ON Song_Artists.artist_id = Artists.artist_id
@@ -82,21 +93,21 @@ const getSongs = (req, res) => {
             INNER JOIN Genres ON Songs.genre_id = Genres.genre_id;
         `;
     }
-    
+
     // query the DB
     pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+        if (err) {
+            res.status(400).send({ message: err.message });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const createSong = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
@@ -113,22 +124,22 @@ const createSong = (req, res) => {
 
     // query the DB
     pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+        if (err) {
+            res.status(400).send({ message: err.message });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const updateSong = (req, res) => {
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
-        return
+        return;
     }
-    
+
     // build query from validated data
     const data = matchedData(req);
     const songID = data.songID;
@@ -147,46 +158,55 @@ const updateSong = (req, res) => {
     // execute query
     pool.query(query, (err, results) => {
         if (err) {
-            console.log(err)
+            console.log(err);
             res.status(400).send(err.code);
         } else if (results.affectedRows === 0) {
-            console.log(err)
-            res.status(400).send({message: "Song with that id does not exist"});
+            console.log(err);
+            res.status(400).send({
+                message: "Song with that id does not exist",
+            });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const deleteSong = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
+
     // query building
     const data = matchedData(req);
     const songID = data.songID;
+    const query = `DELETE FROM Songs
+        WHERE song_id = ${songID};`;
 
-    const query = 
-        `DELETE FROM Songs
-        WHERE song_id = ${songID};`
-    
+    // query db
     pool.query(query, (err, results) => {
         if (err) {
             console.log(err.code);
-            res.status(400).send({message: "Song not deleted"});
-        } else if (results.affectedRows === 0){
-            res.status(400).send({message: "Song with that id does not exist"});
+            res.status(400).send({ message: "Song not deleted" });
+        } else if (results.affectedRows === 0) {
+            res.status(400).send({
+                message: "Song with that id does not exist",
+            });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
-export default {getSongs, getSongsValidation,
-    createSong, createSongValidation, 
-    updateSong, updateSongValidation,
-    deleteSong, songByIdValidation}
+export default {
+    getSongs,
+    getSongsValidation,
+    createSong,
+    createSongValidation,
+    updateSong,
+    updateSongValidation,
+    deleteSong,
+    songByIdValidation,
+};

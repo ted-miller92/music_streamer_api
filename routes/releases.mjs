@@ -1,43 +1,54 @@
 import { pool } from "../database/db_connector.js";
-import {query, param, body, validationResult, matchedData} from "express-validator";
+import {
+    query,
+    param,
+    body,
+    validationResult,
+    matchedData,
+} from "express-validator";
 
 // validation for getting Release(s)
 const getReleasesValidation = [
     query("releaseID").optional().isNumeric(),
     query("artistID").optional().isNumeric(),
-    query("releaseTypeID").optional().isNumeric()
-]
+    query("releaseTypeID").optional().isNumeric(),
+];
 
 // validation set for creating Release
 const createReleaseValidation = [
-    body("releaseName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("releaseName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
     body("artistID").notEmpty().isNumeric(),
-    body("releaseTypeID").notEmpty().isNumeric()
-]
+    body("releaseTypeID").notEmpty().isNumeric(),
+];
 
 // validation for specificying single Release by id
 const releaseByIdValidation = [
-    param("releaseID").notEmpty().isNumeric().escape()
-]
+    param("releaseID").notEmpty().isNumeric().escape(),
+];
 
 // validation for updating Release
 const updateReleaseValidation = [
     body("releaseID").notEmpty().isNumeric().escape(),
-    body("releaseName").notEmpty().matches(/^[A-Za-z0-9'"]/),
+    body("releaseName")
+        .notEmpty()
+        .matches(/^[A-Za-z0-9'"]/),
     body("artistID").notEmpty().isNumeric(),
-    body("releaseTypeID").notEmpty().isNumeric()
-]
+    body("releaseTypeID").notEmpty().isNumeric(),
+];
 
 const getReleases = (req, res) => {
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
-    const data = matchedData(req);
 
-    var query = '';
+    // query building
+    const data = matchedData(req);
+    var query = "";
 
     if (data.releaseID) {
         query = `SELECT * FROM Releases
@@ -64,21 +75,22 @@ const getReleases = (req, res) => {
 
     // query the DB
     pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+        if (err) {
+            res.status(400).send({ message: err.message });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const createRelease = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
     }
+
     // query building
     const data = matchedData(req);
     const releaseName = data.releaseName;
@@ -90,29 +102,28 @@ const createRelease = (req, res) => {
 
     // query the DB
     pool.query(query, function (err, results, fields) {
-        if (err){
-            res.status(400).send({message: err.message});
+        if (err) {
+            res.status(400).send({ message: err.message });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const updateRelease = (req, res) => {
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
-        return
+        return;
     }
-    
+
     // build query from validated data
     const data = matchedData(req);
     const releaseID = data.releaseID;
     const releaseName = data.releaseName;
     const artistID = data.artistID;
     const releaseTypeID = data.releaseTypeID;
-
     const query = `UPDATE Releases 
                     SET release_name = "${releaseName}",
                     artist_id = "${artistID}",
@@ -122,48 +133,55 @@ const updateRelease = (req, res) => {
     // execute query
     pool.query(query, (err, results) => {
         if (err) {
-            console.log(err)
+            console.log(err);
             res.status(400).send(err.code);
         } else if (results.affectedRows === 0) {
-            console.log(err)
-            res.status(400).send({message: "Release with that id does not exist"});
+            console.log(err);
+            res.status(400).send({
+                message: "Release with that id does not exist",
+            });
         } else {
             res.status(200).send(results);
         }
     });
-}
+};
 
 const deleteRelease = (req, res) => {
-    // validation 
+    // validation
     const result = validationResult(req);
-
-    if (!result.isEmpty()){
+    if (!result.isEmpty()) {
         res.status(400).send(result.array());
         return;
-    } else{
+    }
 
-        // query building
-        const data = matchedData(req);
-        const releaseID = data.releaseID;
-        
-    const query = 
-    `DELETE FROM Releases
-    WHERE release_id = ${releaseID};`
-    
+    // query building
+    const data = matchedData(req);
+    const releaseID = data.releaseID;
+    const query = `DELETE FROM Releases
+    WHERE release_id = ${releaseID};`;
+
+    // query the db
     pool.query(query, (err, results) => {
         if (err) {
             console.log(err.code);
-            res.status(400).send({message: "Release not deleted"});
-        } else if (results.affectedRows === 0){
-            res.status(400).send({message: "Release with that id does not exist"});
+            res.status(400).send({ message: "Release not deleted" });
+        } else if (results.affectedRows === 0) {
+            res.status(400).send({
+                message: "Release with that id does not exist",
+            });
         } else {
             res.status(200).send(results);
         }
     });
-}
-}
+};
 
-export default {getReleases, getReleasesValidation,
-    createRelease, createReleaseValidation, 
-    updateRelease, updateReleaseValidation,
-    deleteRelease, releaseByIdValidation}
+export default {
+    getReleases,
+    getReleasesValidation,
+    createRelease,
+    createReleaseValidation,
+    updateRelease,
+    updateReleaseValidation,
+    deleteRelease,
+    releaseByIdValidation,
+};

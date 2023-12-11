@@ -1,5 +1,13 @@
+/* index.js
+The starting file for the server application. Route handlers and validation
+rules are imported from the "./routes/" directory. 
+
+Citation Notes
+Most of the route handling code is adapted from example applications
+from Oregon State University's CS 290 (Web Development) course. 
+*/
+
 import express, { json, urlencoded } from "express";
-import { pool } from "./database/db_connector.js";
 import cors from "cors";
 
 import songs from "./routes/songs.mjs";
@@ -25,7 +33,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-    res.json({message: "ok"});
+    res.json({message: "Root of API. Prepend routes with '/api/'"});
 });
 
 /* Artists */
@@ -85,4 +93,3 @@ app.delete("/api/users/:userID", users.userByIdValidation, users.deleteUser);
 app.listen(port, () => {
     console.log(`API Listening at http://localhost:${port}`);
 });
-
