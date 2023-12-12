@@ -1,3 +1,12 @@
+/* artists.mjs
+
+Citation Information
+The basic layout of each function has been adapted from the starter application
+code provided as part of OSU's CS 340 (Introduction to Databases), with the exception of the 
+implementation of "express-validator". The code can be found at:
+https://github.com/osu-cs340-ecampus/nodejs-starter-app
+*/
+
 import { pool } from "../database/db_connector.js";
 import {
     param,

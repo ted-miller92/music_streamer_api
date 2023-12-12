@@ -4,7 +4,16 @@ rules are imported from the "./routes/" directory.
 
 Citation Notes
 Most of the route handling code is adapted from example applications
-from Oregon State University's CS 290 (Web Development) course. 
+from Oregon State University's CS 290 (Web Development) course and 
+CS 340 (Introduction to Databases), with the exception of utilizing the 
+"express-validator" package. 
+
+Other changes we made were separating individual routes into their
+own directories and the differing construction of queries based on 
+request parameter and body data. 
+
+CS 340 example source code:
+https://github.com/osu-cs340-ecampus 
 */
 
 import express, { json, urlencoded } from "express";

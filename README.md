@@ -4,11 +4,11 @@ This is the server code for a music streamer application. It emulates a back end
 
 ## General Citations
 
-The structure of the route handlers was adapted from a project and starter code for Oregon State University's CS 290 Web Development class. That code originally used MongoDB as a database, but this has been changed to use MariaDB and MySQL as a database. The basic structure of using a `db_connector.js` file has been adopted from code from an activity in OSU's CS 340, Introduction to Databases. 
+The structure of the route handlers was adapted from a project and starter code for Oregon State University's CS 340 Introduction to Databases and CS 290 Web Development classes. The basic structure of using a `db_connector.js` file has been adopted from code from an activity in OSU's CS 340, Introduction to Databases. More specific citations are included in the individual files.
 
 ## Setting up the server
 
-Run the server by entering the command `npm start`. When this is deployed on the flip server, I have changed the start command to the following:
+Run the server by entering the command `npm start`. When this is deployed on the flip server, the start command in `package.json` has been changed to the following:
 
 ```
 ...
@@ -17,12 +17,12 @@ Run the server by entering the command `npm start`. When this is deployed on the
     "stop": "forever stop index.js",
     "test": "npm test"
   },
-  ...
+...
 ```
 
-This utilizes the npm `forever` package to leave the server running in the background. 
+This utilizes the npm `forever` package to leave the server running in the background. You can list the `forever` process by entering the command `forever list` and any process can be stopped by entering `forever stop [pid]` where `[pid]` is the given `forever` process ID. 
 
-A local instance of a MySQL database should also be running. See the section [Database Set up](#database-set-up) for notes on this. 
+A local instance of a MySQL database should be running. See the section [Database Set up](#database-set-up) for notes on this. 
 
 This API uses the `dotenv` package to manage potentially sensitive credential information. Create a file called `.env` in the root directory of this project with the following:
 
@@ -55,6 +55,12 @@ To retrieve data, most of the entities follow the pattern
 GET http://{API_ENDPOINT}/api/artists
 ```
 
+Some specific parameters can be appended to the above URL to filter results. For example, if you want to get all songs where the releaseID is 2:
+
+```
+GET http://{API_ENDPOINT}/api/songs?releaseID=2
+```
+
 ### POST requests
 
 Include a body with all parameters filled out. 
@@ -67,6 +73,19 @@ body: {
     "artistDescription" : artistDescription
 }
 
+```
+
+## PUT Requests
+
+When updating existing records, include all fields even if they are not modified.
+
+```
+PUT 
+http://{API_ENDPOIT}/api/artists
+body: {
+    "artistName": artistName,
+    "artistDescription" : artistDescription
+}
 ```
 
 ### DELETE requests
